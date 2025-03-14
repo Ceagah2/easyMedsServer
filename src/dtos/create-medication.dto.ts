@@ -1,3 +1,4 @@
+import { FrequencyUnit } from '@prisma/client';
 import {
   IsBoolean,
   IsDate,
@@ -7,12 +8,6 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-
-export enum FrequencyUnit {
-  DAILY = 'daily',
-  WEEKLY = 'weekly',
-  MONTHLY = 'monthly',
-}
 
 export class CreateMedicationDto {
   @IsString()

@@ -47,4 +47,12 @@ export class UsersController {
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
+
+  @Get()
+  @ApiOperation({ summary: 'Busca todos os usuário' })
+  @ApiResponse({ status: 200, description: 'Usuários encontrados' })
+  @ApiResponse({ status: 404, description: 'Erro ao retornar usuários' })
+  findAll() {
+    return this.usersService.findAll();
+  }
 }
