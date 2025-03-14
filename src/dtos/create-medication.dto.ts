@@ -1,4 +1,18 @@
-import { IsDate, IsNumber, IsString, IsUUID } from 'class-validator';
+import {
+  IsBoolean,
+  IsDate,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
+
+export enum FrequencyUnit {
+  DAILY = 'daily',
+  WEEKLY = 'weekly',
+  MONTHLY = 'monthly',
+}
 
 export class CreateMedicationDto {
   @IsString()
@@ -11,8 +25,18 @@ export class CreateMedicationDto {
   startDate: Date;
 
   @IsNumber()
-  durationInDays: number;
+  frequency: number;
+
+  @IsEnum(FrequencyUnit)
+  frequencyUnit: FrequencyUnit;
 
   @IsUUID()
   userId: string;
+
+  @IsBoolean()
+  isControlled: boolean;
+
+  @IsOptional()
+  @IsDate()
+  prescriptionExpiration?: Date;
 }
