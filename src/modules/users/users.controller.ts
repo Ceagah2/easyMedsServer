@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBody,
   ApiOperation,
@@ -7,6 +15,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/dtos/create-user.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth-guard';
 import { UsersService } from './users.service';
 
 @ApiTags('Users')
@@ -54,5 +63,12 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'Erro ao retornar usuários' })
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/deactivate')
+  @ApiOperation({ summary: 'Congela um usuário (desativa a conta)' })
+  async deactivate(@Param('id') id: string) {
+    return this.usersService.deactivateUser(id);
   }
 }

@@ -13,4 +13,19 @@ export class RemindersService {
   async findOne(id: string) {
     return this.prisma.reminder.findUnique({ where: { id } });
   }
+
+  async findAll() {
+    return this.prisma.reminder.findMany();
+  }
+
+  async update(id: string, data: Partial<CreateReminderDto>) {
+    return this.prisma.reminder.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async remove(id: string) {
+    return this.prisma.reminder.delete({ where: { id } });
+  }
 }

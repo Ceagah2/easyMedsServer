@@ -17,4 +17,10 @@ export class UsersService {
   async findAll() {
     return this.prisma.user.findMany();
   }
+  async deactivateUser(id: string) {
+    return this.prisma.user.update({
+      where: { id },
+      data: { isActive: false },
+    });
+  }
 }

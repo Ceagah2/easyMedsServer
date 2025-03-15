@@ -1,12 +1,13 @@
 import { FrequencyUnit } from '@prisma/client';
 import {
   IsBoolean,
-  IsDate,
+  IsDateString,
   IsEnum,
-  IsNumber,
+  IsInt,
   IsOptional,
   IsString,
   IsUUID,
+  Min,
 } from 'class-validator';
 
 export class CreateMedicationDto {
@@ -16,22 +17,23 @@ export class CreateMedicationDto {
   @IsString()
   dosage: string;
 
-  @IsDate()
-  startDate: Date;
+  @IsDateString()
+  startDate: string;
 
-  @IsNumber()
+  @IsInt()
+  @Min(1)
   frequency: number;
 
   @IsEnum(FrequencyUnit)
   frequencyUnit: FrequencyUnit;
 
-  @IsUUID()
-  userId: string;
-
   @IsBoolean()
   isControlled: boolean;
 
+  @IsUUID()
+  userId: string;
+
   @IsOptional()
-  @IsDate()
-  prescriptionExpiration?: Date;
+  @IsDateString()
+  prescriptionExpiration?: string;
 }

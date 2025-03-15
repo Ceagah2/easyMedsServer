@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBody,
   ApiOperation,
@@ -7,6 +16,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateReminderDto } from 'src/dtos/create-reminders.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth-guard';
 import { RemindersService } from './reminders.service';
 
 @ApiTags('Reminders')
@@ -40,5 +50,30 @@ export class RemindersController {
   @ApiResponse({ status: 404, description: 'Lembrete não encontrado' })
   async findOne(@Param('id') id: string) {
     return this.remindersService.findOne(id);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Busca todos os lembretes' })
+  @ApiResponse({ status: 200, description: 'Lembretes encontrados' })
+  @ApiResponse({ status: 404, description: 'Erro ao retornar lembrete' })
+  async findAll() {
+    return this.remindersService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  @ApiOperation({ summary: 'Atualiza um lembrete' })
+  async update(
+    @Param('id') id: string,
+    @Body() updateReminderDto: Partial<CreateReminderDto>,
+  ) {
+    return this.remindersService.update(id, updateReminderDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  @ApiOperation({ summary: 'Remove um lembrete' })
+  async remove(@Param('id') id: string) {
+    return this.remindersService.remove(id);
   }
 }
