@@ -21,6 +21,7 @@ model User {
   password    String
   isActive  Boolean  @default(true) 
   hasPremium  Boolean  @default(false)
+  refreshToken  String?
   medications Medication[]
 }
 
