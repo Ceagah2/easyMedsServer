@@ -6,8 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  Req,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -19,19 +17,16 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateMedicationDto } from 'src/dtos/create-medication.dto';
-
 import { UpdateMedicationDto } from 'src/dtos/update-medication.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth-guard';
 import { MedicationsService } from './medications.service';
 
 @ApiTags('Medications')
 @Controller('medications')
-@UseGuards(JwtAuthGuard)
 export class MedicationsController {
   constructor(private readonly medicationsService: MedicationsService) {}
 
-  @Post()
-  @ApiOperation({ summary: 'Cria um novo medicamento' })
+  @Post(':userId')
+  @ApiOperation({ summary: 'Cria um novo medicamento para um usuário' })
   @ApiBody({
     description: 'Dados necessários para criar um medicamento',
     type: CreateMedicationDto,
@@ -62,59 +57,88 @@ export class MedicationsController {
       },
     },
   })
+  @ApiParam({
+    name: 'userId',
+    description: 'ID do usuário que está cadastrando o medicamento',
+    example: 'c9f84575....',
+  })
   @ApiResponse({ status: 201, description: 'Medicamento criado com sucesso' })
-  async create(@Body() createMedicationDto: CreateMedicationDto, @Req() req) {
-    const userId = req.user.id || '';
-    return this.medicationsService.create({ ...createMedicationDto, userId });
+  async create(
+    @Param('userId') userId: string,
+    @Body() createMedicationDto: CreateMedicationDto,
+  ) {
+    return this.medicationsService.create(createMedicationDto, userId);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Busca um medicamento pelo ID' })
+  @Get(':userId/:medicationId')
+  @ApiOperation({ summary: 'Busca um medicamento específico de um usuário' })
   @ApiParam({
-    name: 'id',
+    name: 'userId',
+    description: 'ID do usuário',
+    example: 'c9f84575....',
+  })
+  @ApiParam({
+    name: 'medicationId',
     description: 'ID do medicamento',
     example: '550e8400-e29b-41d4-a716-446655440000',
   })
   @ApiResponse({ status: 200, description: 'Medicamento encontrado' })
-  @ApiResponse({ status: 401, description: 'Token invalido ou ausente' })
   @ApiResponse({ status: 404, description: 'Medicamento não encontrado' })
-  async findOne(@Param('id') id: string) {
-    return this.medicationsService.findOne(id);
+  async findOne(
+    @Param('userId') userId: string,
+    @Param('medicationId') medicationId: string,
+  ) {
+    return this.medicationsService.findOne(medicationId, userId);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Busca todos os medicamentos cadastrados' })
+  @Get('/Allmeds')
+  @ApiOperation({
+    summary: 'Busca todos os medicamentos de um usuário específico',
+  })
   @ApiResponse({ status: 200, description: 'Medicamentos encontrados' })
   @ApiResponse({ status: 400, description: 'Erro ao retornar medicamentos' })
-  async findAll() {
-    return this.medicationsService.findAll();
+  @ApiParam({
+    name: 'userId',
+    description: 'ID do usuário para buscar os medicamentos',
+    example: 'c9f84575....',
+  })
+  async findAll(@Param('userId') userId: string) {
+    return this.medicationsService.findAll(userId);
   }
 
-  @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @Patch(':userId/:medicationId')
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  @ApiOperation({ summary: 'Atualiza um medicamento pelo ID' })
+  @ApiOperation({ summary: 'Atualiza um medicamento de um usuário' })
   @ApiParam({
-    name: 'id',
+    name: 'userId',
+    description: 'ID do usuário',
+    example: 'c9f84575....',
+  })
+  @ApiParam({
+    name: 'medicationId',
     description: 'ID do medicamento',
     example: '550e8400-e29b-41d4-a716-446655440000',
   })
   async update(
-    @Param('id') id: string,
+    @Param('userId') userId: string,
+    @Param('medicationId') medicationId: string,
     @Body() updateMedicationDto: UpdateMedicationDto,
   ) {
-    return this.medicationsService.update(id, updateMedicationDto);
+    return this.medicationsService.update(
+      medicationId,
+      userId,
+      updateMedicationDto,
+    );
   }
 
-  @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Remove um medicamento pelo ID' })
+  @Delete(':userId/:medicationId')
+  @ApiOperation({ summary: 'Remove um medicamento de um usuário' })
   @ApiParam({
-    name: 'id',
+    name: 'medicationId',
     description: 'ID do medicamento',
     example: '550e8400-e29b-41d4-a716-446655440000',
   })
-  async remove(@Param('id') id: string) {
-    return this.medicationsService.remove(id);
+  async remove(@Param('medicationId') medicationId: string) {
+    return this.medicationsService.remove(medicationId);
   }
 }
