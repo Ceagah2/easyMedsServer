@@ -71,4 +71,12 @@ export class UsersController {
   async deactivate(@Param('id') id: string) {
     return this.usersService.deactivateUser(id);
   }
+
+  @Patch(':id/expo-push-token')
+  async updateExpoPushToken(
+    @Param('id') userId: string,
+    @Body('expoPushToken') expoPushToken: string,
+  ) {
+    return this.usersService.updateExpoPushToken(userId, expoPushToken);
+  }
 }

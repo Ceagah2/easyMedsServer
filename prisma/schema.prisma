@@ -22,6 +22,7 @@ model User {
   isActive  Boolean  @default(true) 
   hasPremium  Boolean  @default(false)
   refreshToken  String?
+  expoPushToken  String?      
   medications Medication[]
 }
 

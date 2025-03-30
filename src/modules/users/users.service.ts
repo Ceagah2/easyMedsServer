@@ -40,4 +40,10 @@ export class UsersService {
       data: { isActive: false },
     });
   }
+  async updateExpoPushToken(userId: string, expoPushToken: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { expoPushToken },
+    });
+  }
 }
